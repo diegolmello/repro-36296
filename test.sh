@@ -14,8 +14,8 @@ do
   echo "Testing $appId"
   flashlight test --bundleId $appId \
    --testCommand "maestro --device $deviceId test -e APP_ID=$appId e2e.yaml" \
-   --iterationCount 10 \
-   --duration 11000 \
+   --iterationCount 50 \
+   --duration 12000 \
    --resultsTitle $appId \
    --resultsFilePath $appId.json
 

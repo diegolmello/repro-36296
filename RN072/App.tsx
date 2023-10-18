@@ -1,105 +1,107 @@
-/**
- * Sample React Native App
- * https://github.com/facebook/react-native
- *
- * @format
- */
+import React, {useEffect, useState} from 'react';
+import {View, StyleSheet, Text, Button} from 'react-native';
 
-import React, {useEffect, useRef, useState} from 'react';
-import {
-  Animated,
-  View,
-  StyleSheet,
-  Dimensions,
-  Button,
-  Text,
-} from 'react-native';
+const Element = ({count, color}) => (
+  <View
+    style={[
+      styles.elementContainer,
+      {
+        backgroundColor: color,
+      },
+    ]}>
+    <Text style={styles.elementText}>{count}</Text>
+  </View>
+);
 
-const colors = ['#000000', '#212121'];
+function Elements() {
+  const [yellowCount, setYellowCount] = useState(800);
+  const [redCount, setRedCount] = useState(800);
 
-const size = Dimensions.get('window').width / 10;
+  // I tried this first, but results were the same for all RN versions
+  // useEffect(() => {
+  //   const interval = setInterval(() => {
+  //     setYellowCount(count => count + 1);
+  //     setRedCount(count => count + 1);
+  //   }, 10);
 
-const Element = ({native = true}) => {
-  const randomColor = () => {
-    return colors[Math.floor(Math.random() * colors.length)];
-  };
-
-  const [color, setColor] = React.useState(randomColor());
-
-  const rotation = useRef(new Animated.Value(0)).current;
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setColor(randomColor());
-    }, Math.floor(Math.random() * 800));
-
-    return () => clearInterval(interval);
-  }, []);
-
-  useEffect(() => {
-    Animated.timing(rotation, {
-      toValue: Math.random(),
-      duration: Math.floor(Math.random() * 1000),
-      useNativeDriver: native,
-    }).start();
-  }, [color]);
-
-  const spin = rotation.interpolate({
-    inputRange: [0, 1],
-    outputRange: ['0deg', '500deg'],
-  });
-
-  return (
-    <Animated.View
-      style={{
-        width: size,
-        height: size,
-        backgroundColor: 'black',
-        transform: [{rotate: spin}],
-      }}
-    />
-  );
-};
-
-const Overlay = () => {
-  return (
-    <View
-      style={{
-        position: 'absolute',
-        top: 200,
-        width: 100,
-        height: 100,
-        backgroundColor: 'white',
-      }}>
-      <Text style={{paddingBottom: 20}}>Animated on the JS thread</Text>
-      <Element native={false} infiniteSpin={true} />
-    </View>
-  );
-};
-
-function App(): JSX.Element {
-  const [mounted, setMounted] = useState(false);
+  //   return () => {
+  //     clearInterval(interval);
+  //   };
+  // }, []);
 
   return (
     <View style={styles.container}>
-      {!mounted && <Button title="mount" onPress={() => setMounted(true)} />}
-      {mounted && (
-        <>
-          {new Array(1000).fill('').map((_, index) => (
-            <Element key={index} />
-          ))}
-          <Overlay />
-        </>
-      )}
+      <View style={[styles.container, styles.reverse]}>
+        {new Array(yellowCount).fill('').map((_, index) => (
+          <Element key={index} count={index} color="yellow" />
+        ))}
+      </View>
+      {new Array(redCount).fill('').map((_, index) => (
+        <Element key={index} count={index} color="red" />
+      ))}
     </View>
   );
 }
 
+const maxCount = 10;
+
+const App = () => {
+  const [isElementsVisible, setIsElementsVisible] = useState(false);
+  const [count, setCount] = useState(0);
+
+  useEffect(() => {
+    setTimeout(() => {
+      if (count >= maxCount) {
+        return;
+      }
+      setIsElementsVisible(!isElementsVisible);
+      setCount(count + 1);
+    }, 1000);
+  }, [isElementsVisible, setIsElementsVisible, count, setCount]);
+
+  if (count >= maxCount) {
+    return (
+      <View style={{flex: 1, alignItems: 'center', justifyContent: 'center'}}>
+        <Text>Done!</Text>
+      </View>
+    );
+  }
+
+  return (
+    <View style={{flex: 1}}>
+      <View style={{margin: 10}}>
+        <Button
+          title={isElementsVisible ? 'Hide' : 'Show'}
+          onPress={() => setIsElementsVisible(!isElementsVisible)}
+        />
+      </View>
+      {isElementsVisible ? <Elements /> : null}
+    </View>
+  );
+};
+
 const styles = StyleSheet.create({
   container: {
-    display: 'flex',
+    flex: 1,
     flexDirection: 'row',
     flexWrap: 'wrap',
+  },
+  reverse: {
+    backgroundColor: 'blue',
+    ...StyleSheet.absoluteFill,
+    flexWrap: 'wrap-reverse',
+    flexDirection: 'row-reverse',
+  },
+  elementContainer: {
+    width: 10,
+    height: 10,
+
+    margin: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  elementText: {
+    fontSize: 5,
   },
 });
 

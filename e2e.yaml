@@ -1,5 +1,6 @@
-appId: ${APP_ID} 
+appId: ${APP_ID}
 ---
 - launchApp
-- tapOn: "MOUNT"
-- assertVisible: Animated on the JS thread
+- extendedWaitUntil:
+    visible: 'Done!'
+    timeout: 30000

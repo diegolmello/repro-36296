@@ -7,7 +7,7 @@ fi
 
 deviceId="$1"
 
-versions=("com.rn068" "com.rn069" "com.rn070" "com.rn071" "com.rn072" "com.rnnightly")
+versions=("com.rn068" "com.rn069" "com.rn070" "com.rn071" "com.rn072" "com.rn073rc2" "com.rnnightly")
 
 for appId in "${versions[@]}"
 do
